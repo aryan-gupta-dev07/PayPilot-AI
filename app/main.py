@@ -1,8 +1,9 @@
-from agent.planner import plan_shopping_request
+from agent.planner import extract_intent
 
 
-request = "I need a laptop under ₹50,000 for gaming with good battery life."
+user_request = input("What are you looking to buy? ")
 
-result = plan_shopping_request(request)
+intent = extract_intent(user_request)
 
-print(result)
+print("\nPayPilot AI - Extracted Intent:")
+print(intent)
