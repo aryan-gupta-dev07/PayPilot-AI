@@ -1,9 +1,18 @@
-from agent.planner import extract_intent
+from tools.products import find_products
 
+results = find_products(
+    category="laptop",
+    budget=50000,
+    requirements=["gaming", "battery"],
+)
 
-user_request = input("What are you looking to buy? ")
+print("Final recommendations:")
 
-intent = extract_intent(user_request)
-
-print("\nPayPilot AI - Extracted Intent:")
-print(intent)
+for index, product in enumerate(results, start=1):
+    print(
+        index,
+        product["name"],
+        "- ₹" + str(product["price"]),
+        "- Rating:",
+        product["rating"],
+    )
