@@ -106,33 +106,145 @@ def match_requirements(
     requirements: list[str],
 ) -> list[dict[str, Any]]:
     """
-    Return products that match at least one user requirement.
+    Return products matching at least one requirement.
     """
+
+    if not requirements:
+        return products.copy()
 
     matched_products = []
 
     for product in products:
-        product_text = (
-            product["name"] + " "
-            + " ".join(product["features"]) + " "
-            + " ".join(product["use_cases"])
+        product_text = " ".join(
+            [
+                product["name"],
+                *product["features"],
+                *product["use_cases"],
+            ]
         ).lower()
 
-        if any(requirement.lower() in product_text for requirement in requirements):
+        matched = any(
+            requirement.lower() in product_text
+            for requirement in requirements
+        )
+
+        if matched:
             matched_products.append(product)
 
     return matched_products
 
+def calculate_product_score(
+    product: dict[str, Any],
+    requirements: list[str],
+    use_case: str | None = None,
+) -> float:
+    """
+    Calculate a baseline product suitability score out of 100.
+    """
+
+    product_text = " ".join(
+        [
+            product["name"],
+            *product["features"],
+            *product["use_cases"],
+        ]
+    ).lower()
+
+    if requirements:
+        matched_count = sum(
+            1
+            for requirement in requirements
+            if requirement.lower() in product_text
+        )
+
+        requirement_score = (
+            matched_count / len(requirements)
+        ) * 100
+    else:
+        requirement_score = 100
+
+    if use_case:
+        use_case_score = (
+            100
+            if use_case.lower() in [
+                item.lower() for item in product["use_cases"]
+            ]
+            else 0
+        )
+    else:
+        use_case_score = 100
+
+    rating_score = (product["rating"] / 5) * 100
+
+    final_score = (
+        requirement_score * 0.50
+        + use_case_score * 0.30
+        + rating_score * 0.20
+    )
+
+    return round(final_score, 2)
+
+def explain_recommendation(
+    product: dict[str, Any],
+    requirements: list[str],
+    budget: float,
+    use_case: str | None = None,
+) -> list[str]:
+    """Explain why a product matches the user's requirements."""
+
+    reasons = []
+
+    if product["price"] <= budget:
+        reasons.append(
+            f"Price ₹{product['price']} is within your ₹{budget} budget."
+        )
+
+    product_text = " ".join(
+        [
+            product["name"],
+            *product["features"],
+            *product["use_cases"],
+        ]
+    ).lower()
+
+    matched_requirements = [
+        requirement
+        for requirement in requirements
+        if requirement.lower() in product_text
+    ]
+
+    if matched_requirements:
+        reasons.append(
+            "Matching requirements: "
+            + ", ".join(matched_requirements)
+            + "."
+        )
+
+    if use_case and use_case.lower() in [
+        item.lower() for item in product["use_cases"]
+    ]:
+        reasons.append(f"Suitable use case: {use_case}.")
+
+    reasons.append(f"Customer rating in dataset: {product['rating']}/5.")
+
+    return reasons
+
 def rank_products(
     products: list[dict[str, Any]],
+    requirements: list[str],
+    use_case: str | None = None,
 ) -> list[dict[str, Any]]:
     """
-    Rank products using rating and requirement match information.
+    Rank products by calculated suitability score.
     """
 
     return sorted(
         products,
-        key=lambda product: product["rating"],
+        key=lambda product: calculate_product_score(
+            product,
+            requirements,
+            use_case,
+        ),
         reverse=True,
     )
     
@@ -140,9 +252,10 @@ def find_products(
     category: str,
     budget: float,
     requirements: list[str],
+    use_case: str | None = None,
 ) -> list[dict[str, Any]]:
     """
-    Find and rank products based on category, budget, and requirements.
+    Find and rank products using the user's shopping intent.
     """
 
     products = search_products(category)
@@ -151,6 +264,10 @@ def find_products(
 
     products = match_requirements(products, requirements)
 
-    products = rank_products(products)
+    products = rank_products(
+        products,
+        requirements,
+        use_case,
+    )
 
-    return products            
+    return products
