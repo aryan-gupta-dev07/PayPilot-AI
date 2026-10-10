@@ -106,7 +106,7 @@ def match_requirements(
     requirements: list[str],
 ) -> list[dict[str, Any]]:
     """
-    Return products matching at least one requirement.
+    Return products matching at least one requirement keyword.
     """
 
     if not requirements:
@@ -123,10 +123,14 @@ def match_requirements(
             ]
         ).lower()
 
-        matched = any(
-            requirement.lower() in product_text
-            for requirement in requirements
-        )
+        matched = False
+
+        for requirement in requirements:
+            keywords = requirement.lower().split()
+
+            if any(keyword in product_text for keyword in keywords):
+                matched = True
+                break
 
         if matched:
             matched_products.append(product)
@@ -137,9 +141,11 @@ def calculate_product_score(
     product: dict[str, Any],
     requirements: list[str],
     use_case: str | None = None,
+    preferences: list[str] | None = None,
 ) -> float:
     """
-    Calculate a baseline product suitability score out of 100.
+    Calculate product suitability using requirements,
+    use case, rating, and user preferences.
     """
 
     product_text = " ".join(
@@ -150,6 +156,7 @@ def calculate_product_score(
         ]
     ).lower()
 
+    # 1. Requirement matching score
     if requirements:
         matched_count = sum(
             1
@@ -163,6 +170,7 @@ def calculate_product_score(
     else:
         requirement_score = 100
 
+    # 2. Use-case score
     if use_case:
         use_case_score = (
             100
@@ -174,12 +182,31 @@ def calculate_product_score(
     else:
         use_case_score = 100
 
+    # 3. Rating score
     rating_score = (product["rating"] / 5) * 100
 
+    # 4. Preference score
+    preferences = preferences or []
+
+    if preferences:
+        matched_preferences = sum(
+            1
+            for preference in preferences
+            if preference.lower() in product_text
+        )
+
+        preference_score = (
+            matched_preferences / len(preferences)
+        ) * 100
+    else:
+        preference_score = 0
+
+    # 5. Weighted final score
     final_score = (
-        requirement_score * 0.50
-        + use_case_score * 0.30
-        + rating_score * 0.20
+        requirement_score * 0.40
+        + use_case_score * 0.25
+        + rating_score * 0.15
+        + preference_score * 0.20
     )
 
     return round(final_score, 2)
@@ -233,41 +260,50 @@ def rank_products(
     products: list[dict[str, Any]],
     requirements: list[str],
     use_case: str | None = None,
+    preferences: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     """
-    Rank products by calculated suitability score.
+    Rank products using requirements, use case,
+    rating, and user preferences.
     """
 
     return sorted(
         products,
         key=lambda product: calculate_product_score(
-            product,
-            requirements,
-            use_case,
+            product=product,
+            requirements=requirements,
+            use_case=use_case,
+            preferences=preferences,
         ),
         reverse=True,
     )
-    
+
 def find_products(
     category: str,
     budget: float,
     requirements: list[str],
     use_case: str | None = None,
+    preferences: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     """
     Find and rank products using the user's shopping intent.
     """
 
+    # Step 1: Find products in the requested category
     products = search_products(category)
 
+    # Step 2: Remove products above the budget
     products = filter_by_budget(products, budget)
 
+    # Step 3: Match products against requirements
     products = match_requirements(products, requirements)
 
+    # Step 4: Rank products using all scoring factors
     products = rank_products(
-        products,
-        requirements,
-        use_case,
+        products=products,
+        requirements=requirements,
+        use_case=use_case,
+        preferences=preferences,
     )
 
     return products
