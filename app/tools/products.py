@@ -298,12 +298,22 @@ def find_products(
     # Step 3: Match products against requirements
     products = match_requirements(products, requirements)
 
-    # Step 4: Rank products using all scoring factors
+    # Step 4: Filter by use case when one is specified
+    if use_case:
+        products = [
+            product
+            for product in products
+            if use_case.lower() in [
+               item.lower() for item in product["use_cases"]
+            ]
+        ]
+
+    # Step 5: Rank products using all scoring factors
     products = rank_products(
         products=products,
         requirements=requirements,
         use_case=use_case,
         preferences=preferences,
     )
-
+    
     return products

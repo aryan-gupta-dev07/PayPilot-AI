@@ -1,6 +1,5 @@
 from app.tools.products import PRODUCTS, match_requirements
-from app.tools.products import find_products
-from app.tools.products import calculate_product_score
+from app.tools.products import find_products, calculate_product_score
 
 
 def test_user_preferences_affect_recommendation_score():
@@ -100,4 +99,78 @@ def test_preferences_can_change_product_ranking():
         preferences=["1TB SSD"],
     )
 
-    assert ranked_products[0]["name"] == "Laptop B"      
+    assert ranked_products[0]["name"] == "Laptop B"
+    
+def test_recommendations_never_exceed_budget():
+    budget = 50000
+
+    results = find_products(
+        category="laptop",
+        budget=budget,
+        requirements=[],
+        use_case=None,
+    )
+
+    assert results, "Expected at least one product within budget"
+
+    for product in results:
+        assert product["price"] <= budget
+
+
+def test_no_products_for_unavailable_category():
+    results = find_products(
+        category="tablet",
+        budget=50000,
+        requirements=[],
+        use_case=None,
+    )
+
+    assert results == []  
+    
+    
+def test_unrelated_requirement_does_not_match_products():
+    results = find_products(
+        category="laptop",
+        budget=50000,
+        requirements=["waterproof submarine"],
+        use_case=None,
+    )
+
+    assert results == []  
+    
+def test_products_with_better_rating_get_higher_score_when_other_factors_match():
+    
+
+    product_a = {
+        "name": "Laptop A",
+        "category": "laptop",
+        "price": 45000,
+        "currency": "INR",
+        "rating": 4.0,
+        "features": ["16GB RAM", "512GB SSD"],
+        "use_cases": ["gaming"],
+    }
+
+    product_b = {
+        "name": "Laptop B",
+        "category": "laptop",
+        "price": 45000,
+        "currency": "INR",
+        "rating": 4.5,
+        "features": ["16GB RAM", "512GB SSD"],
+        "use_cases": ["gaming"],
+    }
+
+    score_a = calculate_product_score(
+        product_a,
+        requirements=["16GB RAM"],
+        use_case="gaming",
+    )
+
+    score_b = calculate_product_score(
+        product_b,
+        requirements=["16GB RAM"],
+        use_case="gaming",
+    )
+
+    assert score_b > score_a              
