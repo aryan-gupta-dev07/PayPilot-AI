@@ -126,9 +126,9 @@ def match_requirements(
         matched = False
 
         for requirement in requirements:
-            keywords = requirement.lower().split()
+            requirement_text = requirement.lower().strip()
 
-            if any(keyword in product_text for keyword in keywords):
+            if requirement_text in product_text:
                 matched = True
                 break
 
