@@ -173,4 +173,32 @@ def test_products_with_better_rating_get_higher_score_when_other_factors_match()
         use_case="gaming",
     )
 
-    assert score_b > score_a              
+    assert score_b > score_a   
+    
+def test_exact_ssd_capacity_matching():
+    from app.tools.products import match_requirements, PRODUCTS
+
+    matched = match_requirements(PRODUCTS, ["1TB SSD"])
+    names = [product["name"] for product in matched]
+
+    assert names == ["Gaming Laptop B", "Performance Laptop E"]
+
+
+def test_requirement_matching_is_case_insensitive():
+    from app.tools.products import match_requirements, PRODUCTS
+
+    matched = match_requirements(PRODUCTS, ["1tb ssd"])
+    names = [product["name"] for product in matched]
+
+    assert names == ["Gaming Laptop B", "Performance Laptop E"]
+
+
+def test_unmatched_exact_requirement_returns_empty_list():
+    from app.tools.products import match_requirements, PRODUCTS
+
+    matched = match_requirements(
+        PRODUCTS,
+        ["16TB SSD"],
+    )
+
+    assert matched == []               

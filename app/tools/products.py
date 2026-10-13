@@ -105,48 +105,99 @@ def match_requirements(
     products: list[dict[str, Any]],
     requirements: list[str],
 ) -> list[dict[str, Any]]:
-    """
-    Return products matching at least one requirement keyword.
-    """
+    """Return products matching the requested requirements."""
 
     if not requirements:
         return products.copy()
 
     matched_products = []
 
+    battery_terms = {
+        "battery",
+        "long battery life",
+        "good battery",
+        "excellent battery",
+        "long battery",
+    }
+
     for product in products:
+        product_name = product["name"].lower()
+        features = [
+            feature.lower()
+            for feature in product["features"]
+        ]
+        use_cases = [
+            use_case.lower()
+            for use_case in product["use_cases"]
+        ]
+
         product_text = " ".join(
-            [
-                product["name"],
-                *product["features"],
-                *product["use_cases"],
-            ]
-        ).lower()
+            [product_name, *features, *use_cases]
+        )
 
         matched = False
 
         for requirement in requirements:
             requirement_text = requirement.lower().strip()
 
-            if requirement_text in product_text:
+            # Match storage specifications against features only.
+            if "ssd" in requirement_text:
+                normalized_requirement = " ".join(
+                    requirement_text.split()
+                )
+                normalized_features = [
+                    " ".join(feature.split())
+                    for feature in features
+                ]
+
+                if normalized_requirement in normalized_features:
+                    matched = True
+                    break
+
+                continue
+
+            # Handle known battery wording variations.
+            if requirement_text in battery_terms:
+                if any(
+                    "battery" in feature
+                    for feature in features
+                ):
+                    matched = True
+                    break
+
+                continue
+
+            # Exact phrase matching across individual fields.
+            if (
+                requirement_text in product_name
+                or requirement_text in features
+                or requirement_text in use_cases
+            ):
+                matched = True
+                break
+
+            # Retain keyword matching for other requirements.
+            keywords = requirement_text.split()
+
+            if any(
+                keyword in product_text
+                for keyword in keywords
+            ):
                 matched = True
                 break
 
         if matched:
             matched_products.append(product)
 
-    return matched_products
-
+    return matched_products    
+    
 def calculate_product_score(
     product: dict[str, Any],
     requirements: list[str],
     use_case: str | None = None,
     preferences: list[str] | None = None,
 ) -> float:
-    """
-    Calculate product suitability using requirements,
-    use case, rating, and user preferences.
-    """
+    """Calculate a recommendation score for a product."""
 
     product_text = " ".join(
         [
@@ -156,60 +207,47 @@ def calculate_product_score(
         ]
     ).lower()
 
-    # 1. Requirement matching score
-    if requirements:
-        matched_count = sum(
-            1
-            for requirement in requirements
-            if requirement.lower() in product_text
-        )
-
-        requirement_score = (
-            matched_count / len(requirements)
-        ) * 100
-    else:
-        requirement_score = 100
-
-    # 2. Use-case score
-    if use_case:
-        use_case_score = (
-            100
-            if use_case.lower() in [
-                item.lower() for item in product["use_cases"]
-            ]
-            else 0
-        )
-    else:
-        use_case_score = 100
-
-    # 3. Rating score
-    rating_score = (product["rating"] / 5) * 100
-
-    # 4. Preference score
-    preferences = preferences or []
-
-    if preferences:
-        matched_preferences = sum(
-            1
-            for preference in preferences
-            if preference.lower() in product_text
-        )
-
-        preference_score = (
-            matched_preferences / len(preferences)
-        ) * 100
-    else:
-        preference_score = 0
-
-    # 5. Weighted final score
-    final_score = (
-        requirement_score * 0.40
-        + use_case_score * 0.25
-        + rating_score * 0.15
-        + preference_score * 0.20
+    requirement_score = (
+        sum(
+            1 for requirement in requirements
+            if requirement.lower().strip() in product_text
+        ) / len(requirements)
+        if requirements else 0.0
     )
 
-    return round(final_score, 2)
+    use_case_score = (
+        1.0
+        if use_case and use_case.lower() in [
+            item.lower() for item in product["use_cases"]
+        ]
+        else 0.0
+    )
+
+    rating_score = product["rating"] / 5.0
+
+    preference_score = (
+        sum(
+            1 for preference in preferences
+            if preference.lower().strip() in product_text
+        ) / len(preferences)
+        if preferences else 0.0
+    )
+
+    if preferences:
+        score = (
+            0.40 * requirement_score
+            + 0.25 * use_case_score
+            + 0.15 * rating_score
+            + 0.20 * preference_score
+        )
+    else:
+        score = (
+            0.50 * requirement_score
+            + 0.3125 * use_case_score
+            + 0.1875 * rating_score
+        )
+
+    return round(score, 4)
 
 def explain_recommendation(
     product: dict[str, Any],
