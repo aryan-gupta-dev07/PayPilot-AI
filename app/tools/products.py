@@ -195,7 +195,7 @@ def calculate_product_score(
     product: dict[str, Any],
     requirements: list[str],
     use_case: str | None = None,
-    preferences: list[str] | None = None,
+    preferences: dict[str, float] | None = None,
 ) -> float:
     """Calculate a recommendation score for a product."""
 
@@ -225,14 +225,57 @@ def calculate_product_score(
 
     rating_score = product["rating"] / 5.0
 
-    preference_score = (
-        sum(
-            1 for preference in preferences
-            if preference.lower().strip() in product_text
-        ) / len(preferences)
-        if preferences else 0.0
-    )
+    preference_score = 0.0
 
+    if isinstance(preferences, list):
+        converted_preferences = {}
+
+        for item in preferences:
+            item = item.lower().strip()
+
+            if "battery" in item:
+                converted_preferences["battery_life"] = 1.0
+            elif "performance" in item:
+                converted_preferences["performance"] = 1.0
+            elif "rating" in item or "review" in item:
+                converted_preferences["rating"] = 1.0
+            else:
+                converted_preferences[item] = 1.0
+
+        preferences = converted_preferences
+
+    if preferences:
+        preference_matches = {
+            "battery_life": "battery",
+            "performance": "performance",
+            "rating": None,
+        }
+
+        total_priority = sum(preferences.values())
+
+        if total_priority > 0:
+            for preference, priority in preferences.items():
+                if preference == "rating":
+                    match_score = product["rating"] / 5.0
+                else:
+                    keyword = preference_matches.get(preference)
+
+                    if preference in ("battery_life", "performance"):
+                        match_score = (
+                            1.0
+                            if keyword and keyword in product_text
+                            else 0.0
+                        )
+                    else:
+                        match_score = (
+                            1.0 if preference in product_text else 0.0
+                        )
+
+                preference_score += (
+                    priority / total_priority
+                ) * match_score
+                
+                
     if preferences:
         score = (
             0.40 * requirement_score
@@ -298,7 +341,7 @@ def rank_products(
     products: list[dict[str, Any]],
     requirements: list[str],
     use_case: str | None = None,
-    preferences: list[str] | None = None,
+    preferences: dict[str, float] | None = None,
 ) -> list[dict[str, Any]]:
     """
     Rank products using requirements, use case,
@@ -321,7 +364,7 @@ def find_products(
     budget: float,
     requirements: list[str],
     use_case: str | None = None,
-    preferences: list[str] | None = None,
+    preferences: dict[str, float] | None = None,
 ) -> list[dict[str, Any]]:
     """
     Find and rank products using the user's shopping intent.
