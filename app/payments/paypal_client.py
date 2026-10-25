@@ -57,5 +57,8 @@ def create_order(amount: str, currency: str = "USD") -> dict:
         timeout=20,
     )
 
+    if not response.ok:
+        print("PayPal error response:", response.text)
+
     response.raise_for_status()
     return response.json()

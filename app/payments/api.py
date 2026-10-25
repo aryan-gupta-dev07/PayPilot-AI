@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
+
 from app.payments.paypal_client import create_order
+
 
 app = FastAPI(title="PayPilot AI Checkout")
 
@@ -45,8 +47,24 @@ def create_checkout_order(request: CheckoutRequest):
 
     except HTTPException:
         raise
+
     except Exception:
         raise HTTPException(
             status_code=502,
             detail="Could not create PayPal Sandbox order.",
         )
+
+
+@app.get("/payment/success")
+def payment_success():
+    return {
+        "message": "Returned from PayPal Sandbox.",
+        "note": "Payment has not been verified or captured yet.",
+    }
+
+
+@app.get("/payment/cancel")
+def payment_cancel():
+    return {
+        "message": "PayPal checkout was cancelled.",
+    }
