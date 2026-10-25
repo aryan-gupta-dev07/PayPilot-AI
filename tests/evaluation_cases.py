@@ -7,7 +7,9 @@ EVALUATION_CASES = [
         "requirements": [],
         "use_case": "gaming",
         "expected_products": ["Gaming Laptop A"],
+        "expected_top_product": "Gaming Laptop A",
     },
+
     {
         "case_id": "study_laptop_001",
         "request": "Laptop for college study under 45000",
@@ -49,6 +51,7 @@ EVALUATION_CASES = [
             "Gaming Laptop A",
             "Gaming Laptop B",
         ],
+        "expected_top_product": "Gaming Laptop B",
     },
     {
         "case_id": "work_laptop_001",
@@ -80,6 +83,7 @@ EVALUATION_CASES = [
             "Student Laptop C",
             "Budget Laptop D",
         ],
+        "expected_top_product": "Student Laptop C",
     },
     {
         "case_id": "gaming_and_study_001",
@@ -114,6 +118,7 @@ EVALUATION_CASES = [
         "requirements": ["1TB SSD"],
         "use_case": None,
         "expected_products": ["Gaming Laptop B"],
+        "expected_top_product": "Gaming Laptop B",
     },
     {
         "case_id": "no_matching_use_case_001",
@@ -123,5 +128,16 @@ EVALUATION_CASES = [
         "requirements": [],
         "use_case": "photography",
         "expected_products": [],
+    },
+
+    {
+        "case_id":"gaming_with_ram_001",
+        "request": "Gaming laptop with 16GB RAM under 50000",
+        "category": "laptop",
+        "budget": 50000,
+        "requirements": ["16GB RAM"],
+        "use_case": "gaming",
+        "expected_products": ["Gaming Laptop A"],
+        "expected_top_product": "Gaming Laptop A",
     },
 ]

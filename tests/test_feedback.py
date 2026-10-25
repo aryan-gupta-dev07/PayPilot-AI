@@ -1,7 +1,7 @@
 import pytest
 
 from app.core.feedback import process_user_feedback
-from app.core.preferences import get_user_preferences
+
 
 
 def test_battery_feedback_updates_preference():
@@ -43,3 +43,22 @@ def test_feedback_without_priority_direction():
 def test_empty_feedback_is_rejected():
     with pytest.raises(ValueError):
         process_user_feedback("")
+
+
+def test_rating_feedback_updates_preference():
+    result = process_user_feedback(
+        "Increase rating priority"
+    )
+
+    assert result["updated"] is True
+    assert result["preference"] == "rating"
+    assert result["priority"] == 0.9
+
+def test_battery_feedback_decreases_priority():
+    result = process_user_feedback(
+        "Please prioritize battery life less"
+    )
+
+    assert result["updated"] is True
+    assert result["preference"] == "battery_life"
+    assert result["priority"] == 0.2

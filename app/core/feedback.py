@@ -9,6 +9,7 @@ def process_user_feedback(feedback: str) -> dict:
     if not feedback_text:
         raise ValueError("Feedback cannot be empty")
 
+    # Identify the preference mentioned in the feedback.
     if "battery" in feedback_text:
         preference = "battery_life"
     elif "performance" in feedback_text:
@@ -21,17 +22,34 @@ def process_user_feedback(feedback: str) -> dict:
             "message": "No recognized preference found.",
         }
 
-    if any(word in feedback_text for word in ["more", "increase", "higher", "prioritize", "priority"]):
-        priority = 0.9
-    elif any(word in feedback_text for word in ["less", "decrease", "lower"]):
+    # Determine whether the user wants to increase or decrease priority.
+    decrease_words = ["less", "decrease", "lower"]
+    increase_words = [
+        "more",
+        "increase",
+        "higher",
+        "prioritize",
+        "priority",
+    ]
+
+    if any(word in feedback_text for word in decrease_words):
         priority = 0.2
+    elif any(word in feedback_text for word in increase_words):
+        priority = 0.9
     else:
         return {
             "updated": False,
-            "message": "Please specify whether to increase or decrease priority.",
+            "message": (
+                "Please specify whether to increase "
+                "or decrease priority."
+            ),
         }
 
-    preferences = update_user_preference(preference, priority)
+    # Update the selected preference.
+    preferences = update_user_preference(
+        preference,
+        priority,
+    )
 
     return {
         "updated": True,
