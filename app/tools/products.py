@@ -30,7 +30,7 @@ PRODUCTS = [
         price=48000,
         currency="INR",
         rating=4.3,
-        features=["16GB RAM", "512GB SSD", "good battery"],
+        features=["16GB RAM", "512GB SSD", "Dedicated GPU", "good battery"],
         use_cases=["gaming", "performance"],
     ),
     create_product(
@@ -39,7 +39,7 @@ PRODUCTS = [
         price=52000,
         currency="INR",
         rating=4.5,
-        features=["16GB RAM", "1TB SSD", "excellent battery"],
+        features=["16GB RAM", "1TB SSD", "Dedicated GPU", "excellent battery"],
         use_cases=["gaming", "performance"],
     ),
     create_product(
