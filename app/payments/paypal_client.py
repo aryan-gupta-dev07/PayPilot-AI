@@ -41,7 +41,10 @@ def create_order(amount: str, currency: str = "USD") -> dict:
                     "amount": {
                         "currency_code": currency,
                         "value": amount,
-                    }
+                    },
+                    "payee": {
+                        "email_address": "sb-wrr1r53470389@business.example.com"
+                    },
                 }
             ],
             "payment_source": {
@@ -57,8 +60,48 @@ def create_order(amount: str, currency: str = "USD") -> dict:
         timeout=20,
     )
 
-    if not response.ok:
-        print("PayPal error response:", response.text)
-
     response.raise_for_status()
+    return response.json()
+
+
+def get_order(order_id: str) -> dict:
+    """Retrieve the current status of a PayPal Sandbox order."""
+    token = get_access_token()
+
+    response = requests.get(
+        f"{PAYPAL_BASE_URL}/v2/checkout/orders/{order_id}",
+        headers={"Authorization": f"Bearer {token}"},
+        timeout=20,
+    )
+    response.raise_for_status()
+
+    return response.json()
+
+
+def capture_order(order_id: str) -> dict:
+    """Capture an approved order, without recapturing completed orders."""
+    order = get_order(order_id)
+    status = order.get("status")
+
+    if status == "COMPLETED":
+        return order
+
+    if status != "APPROVED":
+        raise ValueError(
+            f"Order is not approved for capture. Current status: {status}"
+        )
+
+    token = get_access_token()
+
+    response = requests.post(
+        f"{PAYPAL_BASE_URL}/v2/checkout/orders/{order_id}/capture",
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+        },
+        json={},
+        timeout=20,
+    )
+    response.raise_for_status()
+
     return response.json()
