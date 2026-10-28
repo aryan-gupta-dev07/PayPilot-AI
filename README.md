@@ -1,63 +1,77 @@
-# PayPilot AI
+🛍️ PayPilot AI
 
-An AI-powered shopping assistant that recommends and compares products based on budget, requirements, use case, and personal preferences.
+An AI-powered shopping assistant for smarter purchasing decisions.
 
-## Features
+PayPilot AI recommends and compares products based on users' budgets, requirements, use cases, and personal preferences.
 
-- Personalized product recommendations
-- Product ranking and scoring
-- Recommendation explanations
-- Product comparison
-- Product pros and cons
-- Interactive Streamlit interface
-- FastAPI backend
-- PayPal Sandbox integration
+✨ Features
 
-## Tech Stack
+- 🤖 AI-powered product recommendations using Groq API
+- 📊 Product ranking and scoring
+- 💡 Recommendation explanations
+- ⚖️ Product comparison, pros, and cons
+- 🖥️ Interactive Streamlit interface
+- ⚙️ FastAPI backend
+- 💳 PayPal Sandbox checkout and payment capture
+- 🧪 Automated testing with Pytest
 
-- Python
-- Streamlit
-- FastAPI
-- Groq API
-- PayPal Sandbox
-- Pytest
+🛠️ Tech Stack
 
-## Installation
+Python · Streamlit · FastAPI · Groq API · PayPal Sandbox · Requests · Pytest
 
-Install the required dependencies:
+🚀 Installation
 
-    python -m pip install -r requirements.txt
+python -m pip install -r requirements.txt 
+Clone the repository and install dependencies:
 
-## Environment Setup
+git clone 
+cd PayPilot-AI
+python -m pip install -r requirements.txt
 
-Create a `.env` file in the project root:
+🔐 Environment Setup
 
-    GROQ_API_KEY=your_groq_api_key
-    PAYPAL_CLIENT_ID=your_paypal_sandbox_client_id
-    PAYPAL_CLIENT_SECRET=your_paypal_sandbox_client_secret
+Create a ".env" file in the project root:
 
-Replace the placeholders with your own credentials. Never share your API keys or secrets.
+GROQ_API_KEY=your_groq_api_key
+PAYPAL_CLIENT_ID=your_paypal_sandbox_client_id
+PAYPAL_CLIENT_SECRET=your_paypal_sandbox_client_secret
 
-## Run the Application
+Use your own credentials and never publish API keys or secrets.
 
-Start the Streamlit interface:
+▶️ Run the Application
 
-    python -m streamlit run app/ui.py
+Streamlit interface:
 
-Start the FastAPI backend in a separate terminal:
+python -m streamlit run app/ui.py
 
-    uvicorn app.payments.api:app --reload --port 8000
+FastAPI backend (in a separate terminal):
 
-API documentation: http://localhost:8000/docs
+python -m uvicorn app.payments.api:app --reload --port 8000
 
-## Run Tests
+API documentation: "http://localhost:8000/docs"
 
-    python -m pytest -q
+Health check: "http://localhost:8000/health"
 
-## Payment Status
+💳 PayPal Sandbox
 
-PayPal Sandbox order creation is implemented. Checkout completion and payment capture have not yet been verified. Real payments are not supported by the current implementation.
+- Creates checkout orders and generates approval links.
+- Supports order capture and status verification.
+- A Sandbox test order returned "COMPLETED".
 
-## Project Status
+Note: This integration is for Sandbox testing only. Production payments are not configured or verified.
 
-The Streamlit interface and product recommendation flow have been tested. All automated tests pass in the development environment.
+🧪 Testing
+
+Run the automated test suite:
+
+python -m pytest -q
+
+All tests passed in the latest reported test run.
+
+📌 Project Status
+
+The shopping assistant, product recommendation flow, FastAPI backend, and PayPal Sandbox integration have been implemented. The checkout capture flow was tested successfully in Sandbox.
+
+---
+
+Built with Python, Streamlit, FastAPI, Groq, and PayPal Sandbox.
