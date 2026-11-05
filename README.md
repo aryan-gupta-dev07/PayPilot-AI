@@ -126,7 +126,7 @@ Start the Streamlit Application
 
 From the project root directory, with the virtual environment activated, execute:
 
-streamlit run app/ui.py
+.venv\Scripts\python.exe -m streamlit run app\ui.py
 
 Streamlit will display a local application URL in the terminal.
 
@@ -134,7 +134,9 @@ Open that URL in your browser to interact with PayPilot AI.
 
 Backend
 
-The project also includes a FastAPI backend in "app/main.py".
+The project also includes a FastAPI backend in "app/payments/api.py".
+
+.venv\Scripts\python.exe -m uvicorn app.payments.api:app --reload
 
 The backend can be accessed through its configured API endpoints when running with the project's supported server configuration.
 
