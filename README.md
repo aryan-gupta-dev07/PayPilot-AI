@@ -58,7 +58,8 @@ Main Components
 - "app/core/": Core application functionality.
 - "app/payments/": Payment-related integration.
 - "app/tools/": Product and supporting tools.
-- "app/main.py": FastAPI backend entry point.
+- "app/main.py": CLI application entry point.
+- "app/payments/api.py": FastAPI backend entry point.
 - "app/ui.py": Streamlit user interface.
 - "tests/": Automated project tests.
 - "evaluation_report.json": Project evaluation results.
