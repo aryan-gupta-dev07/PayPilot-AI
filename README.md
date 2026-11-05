@@ -1,77 +1,198 @@
-🛍️ PayPilot AI
+PayPilot AI – Intelligent AI Commerce Agent
 
-An AI-powered shopping assistant for smarter purchasing decisions.
+Overview
 
-PayPilot AI recommends and compares products based on users' budgets, requirements, use cases, and personal preferences.
+PayPilot AI is an AI-powered commerce agent designed to make online shopping more intelligent, personalized, and efficient.
 
-✨ Features
+It uses Large Language Models (LLMs), structured product data, and specialized tools to understand user requirements, discover relevant products, compare alternatives, and generate personalized product recommendations.
 
-- 🤖 AI-powered product recommendations using Groq API
-- 📊 Product ranking and scoring
-- 💡 Recommendation explanations
-- ⚖️ Product comparison, pros, and cons
-- 🖥️ Interactive Streamlit interface
-- ⚙️ FastAPI backend
-- 💳 PayPal Sandbox checkout and payment capture
-- 🧪 Automated testing with Pytest
+The system focuses on helping users make informed purchasing decisions through conversational AI and explainable product rankings.
 
-🛠️ Tech Stack
+Key Features
 
-Python · Streamlit · FastAPI · Groq API · PayPal Sandbox · Requests · Pytest
+- Natural Language Understanding: Understands shopping requirements expressed in everyday language.
+- AI-Powered Product Discovery: Identifies products relevant to user requirements.
+- Intelligent Product Comparison: Compares product alternatives and highlights their advantages and disadvantages.
+- Personalized Recommendations: Uses user preferences to improve product rankings.
+- Dynamic Preference Updates: Adjusts recommendations when user preferences change.
+- Explainable Recommendations: Provides reasons behind product recommendations.
+- Conversational Shopping Experience: Supports interactive shopping through an AI-powered interface.
+- PayPal Sandbox Integration: Supports testing of payment-related workflows in the PayPal Sandbox environment.
 
-🚀 Installation
+Technology Stack
 
-python -m pip install -r requirements.txt 
-Clone the repository and install dependencies:
+Component| Technology
+Programming Language| Python
+AI / LLM Integration| Groq API
+LLM Interface| OpenAI-compatible API
+Backend| FastAPI
+Frontend| Streamlit
+Payment Integration| PayPal Sandbox
+Environment Configuration| python-dotenv
+HTTP Requests| Requests
 
-git clone 
+Project Architecture
+
+PayPilot-AI/
+│
+├── app/
+│   ├── agent/
+│   ├── core/
+│   ├── payments/
+│   ├── tools/
+│   ├── main.py
+│   ├── ui.py
+│   └── __init__.py
+│
+├── tests/
+│
+├── evaluation_report.json
+├── requirements.txt
+├── README.md
+├── LICENSE
+└── .gitignore
+
+Main Components
+
+- "app/agent/": AI agent planning and LLM-related functionality.
+- "app/core/": Core application functionality.
+- "app/payments/": Payment-related integration.
+- "app/tools/": Product and supporting tools.
+- "app/main.py": FastAPI backend entry point.
+- "app/ui.py": Streamlit user interface.
+- "tests/": Automated project tests.
+- "evaluation_report.json": Project evaluation results.
+
+Prerequisites
+
+Before running the project, ensure that you have:
+
+- Python installed.
+- Git installed.
+- A Groq API key.
+- PayPal Sandbox credentials for payment-related testing.
+
+Installation and Setup
+
+1. Clone the Repository
+
+git clone https://github.com/aryan-gupta-dev07/PayPilot-AI.git
+
+2. Navigate to the Project Directory
+
 cd PayPilot-AI
-python -m pip install -r requirements.txt
 
-🔐 Environment Setup
+3. Create a Virtual Environment
 
-Create a ".env" file in the project root:
+python -m venv .venv
+
+4. Activate the Virtual Environment
+
+Windows:
+
+.venv\Scripts\activate
+
+Linux / macOS:
+
+source .venv/bin/activate
+
+5. Install Dependencies
+
+pip install -r requirements.txt
+
+Environment Configuration
+
+Create a ".env" file in the project root directory.
+
+Add the following environment variables:
 
 GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=your_configured_groq_model
+
 PAYPAL_CLIENT_ID=your_paypal_sandbox_client_id
 PAYPAL_CLIENT_SECRET=your_paypal_sandbox_client_secret
 
-Use your own credentials and never publish API keys or secrets.
+Replace the placeholder values with your own credentials.
 
-▶️ Run the Application
+Important:
 
-Streamlit interface:
+- Never upload your actual API keys or credentials to GitHub.
+- Use PayPal Sandbox credentials for testing.
+- Keep the ".env" file private.
 
-python -m streamlit run app/ui.py
+Running the Application
 
-FastAPI backend (in a separate terminal):
+Start the Streamlit Application
 
-python -m uvicorn app.payments.api:app --reload --port 8000
+From the project root directory, with the virtual environment activated, execute:
 
-API documentation: "http://localhost:8000/docs"
+streamlit run app/ui.py
 
-Health check: "http://localhost:8000/health"
+Streamlit will display a local application URL in the terminal.
 
-💳 PayPal Sandbox
+Open that URL in your browser to interact with PayPilot AI.
 
-- Creates checkout orders and generates approval links.
-- Supports order capture and status verification.
-- A Sandbox test order returned "COMPLETED".
+Backend
 
-Note: This integration is for Sandbox testing only. Production payments are not configured or verified.
+The project also includes a FastAPI backend in "app/main.py".
 
-🧪 Testing
+The backend can be accessed through its configured API endpoints when running with the project's supported server configuration.
 
-Run the automated test suite:
+Testing
 
-python -m pytest -q
+The project includes automated tests in the "tests/" directory.
 
-All tests passed in the latest reported test run.
+To run the test suite, install pytest if it is not already available:
 
-📌 Project Status
+pip install pytest
 
-The shopping assistant, product recommendation flow, FastAPI backend, and PayPal Sandbox integration have been implemented. The checkout capture flow was tested successfully in Sandbox.
+Then execute:
 
----
+pytest -q
 
-Built with Python, Streamlit, FastAPI, Groq, and PayPal Sandbox.
+PayPal Sandbox Integration
+
+PayPilot AI includes PayPal Sandbox integration for testing payment-related functionality.
+
+The Sandbox environment allows developers and evaluators to test payment workflows without processing real-money transactions.
+
+Use valid Sandbox credentials when testing payment functionality.
+
+Security and Privacy
+
+- API credentials are configured through environment variables.
+- Sensitive credentials should never be committed to version control.
+- Payment testing should use the PayPal Sandbox environment.
+- The application should be configured with appropriate credentials before testing integrations.
+
+Project Evaluation
+
+The project includes an evaluation report and automated tests to assess its functionality.
+
+The evaluation focuses on areas such as:
+
+- Product discovery.
+- Product ranking.
+- Recommendation relevance.
+- Preference-aware behavior.
+- Handling of unsupported shopping requests.
+
+Refer to "evaluation_report.json" for the available evaluation results.
+
+Future Improvements
+
+- Expanded product catalog integrations.
+- More advanced recommendation strategies.
+- Improved personalization.
+- Additional commerce tool integrations.
+- Enhanced evaluation across diverse shopping scenarios.
+
+License
+
+This project is licensed under the MIT License.
+
+See the "LICENSE" file for details.
+
+Repository
+
+GitHub: https://github.com/aryan-gupta-dev07/PayPilot-AI
